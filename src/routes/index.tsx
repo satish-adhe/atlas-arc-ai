@@ -4,6 +4,7 @@ import { ArrowRight, Sparkles, MapPin, Wallet, CloudSun, Share2, Compass, Hotel,
 import heroDubaiSkyline from "@/assets/hero-dubai-skyline.jpg";
 import heroDubaiDesert from "@/assets/hero-dubai-desert.jpg";
 import heroDubaiPalm from "@/assets/hero-dubai-palm.jpg";
+import heroNatureWalk from "@/assets/hero-nature-walk.jpg";
 import destTokyo from "@/assets/dest-tokyo.jpg";
 import destKyoto from "@/assets/dest-kyoto.jpg";
 import destNorway from "@/assets/dest-norway.jpg";
