@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ArrowRight, Sparkles, MapPin, Wallet, CloudSun, Share2, Compass, Hotel, Plane } from "lucide-react";
-import heroGlobe from "@/assets/hero-globe.jpg";
+import heroDubaiSkyline from "@/assets/hero-dubai-skyline.jpg";
+import heroDubaiDesert from "@/assets/hero-dubai-desert.jpg";
+import heroDubaiPalm from "@/assets/hero-dubai-palm.jpg";
 import destTokyo from "@/assets/dest-tokyo.jpg";
 import destKyoto from "@/assets/dest-kyoto.jpg";
 import destNorway from "@/assets/dest-norway.jpg";
@@ -94,36 +96,66 @@ function Landing() {
             </form>
           </div>
 
-          {/* Hero visual */}
-          <div className="relative mt-20 max-w-5xl mx-auto">
+          {/* Hero visual — Dubai nature gallery */}
+          <div className="relative mt-20 max-w-6xl mx-auto">
             <div className="absolute -inset-8 bg-azure/10 blur-3xl rounded-full" />
-            <div className="relative glass rounded-3xl overflow-hidden shadow-card">
-              <img
-                src={heroGlobe}
-                alt="Globe with glowing travel routes"
-                width={1600}
-                height={1200}
-                className="w-full h-auto"
-              />
-              {/* Floating card 1 */}
-              <div className="hidden md:block absolute top-10 left-10 w-56 glass-strong rounded-2xl p-4 shadow-card animate-float">
-                <div className="text-azure text-[10px] font-bold uppercase tracking-widest mb-1">Day 03 · Kyoto</div>
-                <div className="text-sm font-semibold">Bamboo grove at dawn</div>
-                <div className="text-xs text-muted-foreground mt-1">06:40 · 2.4km walk</div>
+            <div className="relative grid grid-cols-1 md:grid-cols-2 gap-4 rounded-[2rem] glass p-3 md:p-4 shadow-card">
+              {/* Main left image */}
+              <div className="relative h-64 sm:h-80 md:h-[28rem] rounded-[1.5rem] overflow-hidden group">
+                <img
+                  src={heroDubaiSkyline}
+                  alt="Dubai skyline at golden hour with Burj Khalifa"
+                  width={1024}
+                  height={768}
+                  loading="lazy"
+                  className="absolute inset-0 size-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+                <div className="absolute bottom-5 left-5 right-5">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-azure mb-1">Skyline</div>
+                  <div className="text-xl md:text-2xl font-display font-bold">Dubai at Dusk</div>
+                </div>
               </div>
-              {/* Floating card 2 */}
-              <div className="hidden md:block absolute bottom-10 right-10 w-64 glass-strong rounded-2xl p-4 shadow-card animate-float" style={{ animationDelay: "-3s" }}>
-                <div className="flex justify-between items-end">
-                  <div>
-                    <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Total Budget</div>
-                    <div className="text-xl font-display font-bold">$2,450</div>
-                  </div>
-                  <div className="h-10 w-16 flex items-end gap-1">
-                    <div className="w-full h-[55%] bg-azure/30 rounded-t" />
-                    <div className="w-full h-[80%] bg-azure/60 rounded-t" />
-                    <div className="w-full h-[40%] bg-azure rounded-t" />
+
+              {/* Right stacked images */}
+              <div className="grid grid-rows-2 gap-4">
+                <div className="relative h-40 sm:h-48 md:h-auto rounded-[1.5rem] overflow-hidden group">
+                  <img
+                    src={heroDubaiDesert}
+                    alt="Dubai desert dunes at sunset with palm trees"
+                    width={1024}
+                    height={768}
+                    loading="lazy"
+                    className="absolute inset-0 size-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-azure mb-0.5">Desert</div>
+                    <div className="text-base md:text-lg font-display font-semibold">Golden Dunes</div>
                   </div>
                 </div>
+                <div className="relative h-40 sm:h-48 md:h-auto rounded-[1.5rem] overflow-hidden group">
+                  <img
+                    src={heroDubaiPalm}
+                    alt="Palm Jumeirah aerial view at twilight"
+                    width={1024}
+                    height={768}
+                    loading="lazy"
+                    className="absolute inset-0 size-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-azure mb-0.5">Coast</div>
+                    <div className="text-base md:text-lg font-display font-semibold">Palm Jumeirah</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating card */}
+              <div className="hidden lg:block absolute top-8 left-8 w-60 glass-strong rounded-2xl p-4 shadow-card animate-float">
+                <div className="text-azure text-[10px] font-bold uppercase tracking-widest mb-1">Live Route</div>
+                <div className="text-sm font-semibold">Dubai · 5-Day Luxury Escape</div>
+                <div className="text-xs text-muted-foreground mt-1">Desert, marina & skyline</div>
               </div>
             </div>
           </div>
