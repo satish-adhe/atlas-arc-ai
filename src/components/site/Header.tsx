@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Moon, Sun, Sparkles } from "lucide-react";
+import { Moon, Sun, Sparkles, Home } from "lucide-react";
 import { useTheme } from "@/components/site/theme-provider";
 
 const links = [
+  { to: "/", label: "Home", icon: Home },
   { to: "/planner", label: "Planner" },
   { to: "/explorer", label: "Explorer" },
   { to: "/map", label: "Route Map" },
@@ -26,16 +27,21 @@ export function Header() {
         </Link>
 
         <div className="hidden lg:flex items-center gap-7 text-sm font-medium text-muted-foreground">
-          {links.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              activeProps={{ className: "text-foreground" }}
-              className="hover:text-foreground transition-colors relative"
-            >
-              {l.label}
-            </Link>
-          ))}
+          {links.map((l) => {
+            const Icon = "icon" in l ? l.icon : null;
+            return (
+              <Link
+                key={l.to}
+                to={l.to}
+                activeOptions={l.to === "/" ? { exact: true } : undefined}
+                activeProps={{ className: "text-foreground" }}
+                className="hover:text-foreground transition-colors relative inline-flex items-center gap-1.5"
+              >
+                {Icon ? <Icon className="size-4" /> : null}
+                {l.label}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2">
