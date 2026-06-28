@@ -159,6 +159,10 @@
   animation: fade-up 0.8s cubic-bezier(0.19, 1, 0.22, 1) both;
 }
 
+@utility animate-hang {
+  animation: hang 5s ease-in-out infinite;
+}
+
 @utility aurora-bg {
   background:
     radial-gradient(60% 50% at 20% 10%, color-mix(in oklab, var(--azure) 25%, transparent), transparent 60%),
