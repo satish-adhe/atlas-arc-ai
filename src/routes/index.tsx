@@ -4,6 +4,7 @@ import { ArrowRight, Sparkles, MapPin, Wallet, CloudSun, Share2, Compass, Hotel,
 import heroDubaiSkyline from "@/assets/hero-dubai-skyline.jpg";
 import heroDubaiDesert from "@/assets/hero-dubai-desert.jpg";
 import heroDubaiPalm from "@/assets/hero-dubai-palm.jpg";
+import heroNatureWalk from "@/assets/hero-nature-walk.jpg";
 import destTokyo from "@/assets/dest-tokyo.jpg";
 import destKyoto from "@/assets/dest-kyoto.jpg";
 import destNorway from "@/assets/dest-norway.jpg";
@@ -59,22 +60,105 @@ function Landing() {
   return (
     <SiteShell>
       {/* HERO */}
-      <section className="relative overflow-hidden">
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+        {/* Background gradients */}
         <div className="absolute inset-0 aurora-bg opacity-70 pointer-events-none" />
         <div
-          className="absolute inset-0 opacity-40 mix-blend-screen pointer-events-none"
-          style={{ backgroundImage: `radial-gradient(ellipse at 80% 30%, rgba(59,130,246,0.25), transparent 60%)` }}
+          className="absolute inset-0 opacity-60 mix-blend-screen pointer-events-none"
+          style={{ backgroundImage: `radial-gradient(ellipse at 50% 40%, rgba(59,130,246,0.18), transparent 55%)` }}
         />
-        <div className="relative max-w-7xl mx-auto px-6 pt-20 pb-24 md:pt-28 md:pb-32 text-center">
+        {/* Dark vignette for text readability */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: `radial-gradient(ellipse at 50% 35%, rgba(2,6,23,0.75) 0%, rgba(2,6,23,0.25) 50%, transparent 80%)` }}
+        />
+
+        {/* Floating image cards behind the title */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Top-left Dubai skyline */}
+          <div
+            className="absolute top-[10%] left-[4%] w-40 sm:w-56 md:w-72 glass p-1.5 rounded-2xl shadow-card opacity-60 sm:opacity-70 animate-hang"
+            style={{ "--hang-rotate": "-6deg", animationDelay: "0s" } as React.CSSProperties}
+          >
+            <img
+              src={heroDubaiSkyline}
+              alt="Dubai skyline at golden hour"
+              width={400}
+              height={300}
+              loading="lazy"
+              className="w-full h-auto rounded-xl object-cover"
+            />
+            <div className="absolute bottom-2 left-2 right-2 px-2 py-1 rounded-lg bg-background/60 backdrop-blur-sm text-[10px] font-semibold text-foreground/90">
+              Dubai Skyline
+            </div>
+          </div>
+
+          {/* Top-right desert dunes */}
+          <div
+            className="absolute top-[8%] right-[5%] w-36 sm:w-48 md:w-60 glass p-1.5 rounded-2xl shadow-card opacity-60 sm:opacity-70 animate-hang"
+            style={{ "--hang-rotate": "5deg", animationDelay: "-1.2s" } as React.CSSProperties}
+          >
+            <img
+              src={heroDubaiDesert}
+              alt="Dubai desert dunes at sunset"
+              width={320}
+              height={240}
+              loading="lazy"
+              className="w-full h-auto rounded-xl object-cover"
+            />
+            <div className="absolute bottom-2 left-2 right-2 px-2 py-1 rounded-lg bg-background/60 backdrop-blur-sm text-[10px] font-semibold text-foreground/90">
+              Golden Dunes
+            </div>
+          </div>
+
+          {/* Bottom-left Palm Jumeirah */}
+          <div
+            className="absolute bottom-[18%] left-[6%] w-32 sm:w-44 md:w-56 glass p-1.5 rounded-2xl shadow-card opacity-60 sm:opacity-70 animate-hang"
+            style={{ "--hang-rotate": "-4deg", animationDelay: "-2.4s" } as React.CSSProperties}
+          >
+            <img
+              src={heroDubaiPalm}
+              alt="Palm Jumeirah aerial view"
+              width={300}
+              height={225}
+              loading="lazy"
+              className="w-full h-auto rounded-xl object-cover"
+            />
+            <div className="absolute bottom-2 left-2 right-2 px-2 py-1 rounded-lg bg-background/60 backdrop-blur-sm text-[10px] font-semibold text-foreground/90">
+              Palm Jumeirah
+            </div>
+          </div>
+
+          {/* Bottom-right nature walk */}
+          <div
+            className="absolute bottom-[12%] right-[3%] w-40 sm:w-52 md:w-64 glass p-1.5 rounded-2xl shadow-card opacity-60 sm:opacity-70 animate-hang"
+            style={{ "--hang-rotate": "6deg", animationDelay: "-3.6s" } as React.CSSProperties}
+          >
+            <img
+              src={heroNatureWalk}
+              alt="Peaceful forest nature walk"
+              width={360}
+              height={270}
+              loading="lazy"
+              className="w-full h-auto rounded-xl object-cover"
+            />
+            <div className="absolute bottom-2 left-2 right-2 px-2 py-1 rounded-lg bg-background/60 backdrop-blur-sm text-[10px] font-semibold text-foreground/90">
+              Nature Walk
+            </div>
+          </div>
+        </div>
+
+        {/* Foreground content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-20 md:pt-32 md:pb-28 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-azure/10 border border-azure/20 text-azure text-xs font-bold uppercase tracking-widest mb-8 animate-fade-up">
             <span className="size-1.5 rounded-full bg-azure animate-pulse" />
             v2.0 AI Engine Live
           </div>
-          <h1 className="font-display text-5xl sm:text-6xl md:text-8xl font-bold tracking-tight leading-[1.02] max-w-5xl mx-auto animate-fade-up">
+          <h1 className="font-display text-5xl sm:text-6xl md:text-8xl font-bold tracking-tight leading-[1.02] max-w-5xl mx-auto animate-fade-up drop-shadow-2xl">
             Travel at the speed <br className="hidden sm:block" />
             <span className="text-gradient-azure">of thought.</span>
           </h1>
-          <p className="mt-8 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-up">
+          <p className="mt-8 text-lg md:text-xl text-foreground/80 max-w-2xl mx-auto leading-relaxed animate-fade-up">
             The world's most advanced AI travel engine. We don't just find flights — we craft hyper-personalized narratives for your next adventure.
           </p>
 
@@ -94,70 +178,6 @@ function Landing() {
                 Generate <ArrowRight className="size-4" />
               </button>
             </form>
-          </div>
-
-          {/* Hero visual — Dubai nature gallery */}
-          <div className="relative mt-20 max-w-6xl mx-auto">
-            <div className="absolute -inset-8 bg-azure/10 blur-3xl rounded-full" />
-            <div className="relative grid grid-cols-1 md:grid-cols-2 gap-4 rounded-[2rem] glass p-3 md:p-4 shadow-card">
-              {/* Main left image */}
-              <div className="relative h-64 sm:h-80 md:h-[28rem] rounded-[1.5rem] overflow-hidden group">
-                <img
-                  src={heroDubaiSkyline}
-                  alt="Dubai skyline at golden hour with Burj Khalifa"
-                  width={1024}
-                  height={768}
-                  loading="lazy"
-                  className="absolute inset-0 size-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-                <div className="absolute bottom-5 left-5 right-5">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-azure mb-1">Skyline</div>
-                  <div className="text-xl md:text-2xl font-display font-bold">Dubai at Dusk</div>
-                </div>
-              </div>
-
-              {/* Right stacked images */}
-              <div className="grid grid-rows-2 gap-4">
-                <div className="relative h-40 sm:h-48 md:h-auto rounded-[1.5rem] overflow-hidden group">
-                  <img
-                    src={heroDubaiDesert}
-                    alt="Dubai desert dunes at sunset with palm trees"
-                    width={1024}
-                    height={768}
-                    loading="lazy"
-                    className="absolute inset-0 size-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-azure mb-0.5">Desert</div>
-                    <div className="text-base md:text-lg font-display font-semibold">Golden Dunes</div>
-                  </div>
-                </div>
-                <div className="relative h-40 sm:h-48 md:h-auto rounded-[1.5rem] overflow-hidden group">
-                  <img
-                    src={heroDubaiPalm}
-                    alt="Palm Jumeirah aerial view at twilight"
-                    width={1024}
-                    height={768}
-                    loading="lazy"
-                    className="absolute inset-0 size-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-azure mb-0.5">Coast</div>
-                    <div className="text-base md:text-lg font-display font-semibold">Palm Jumeirah</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating card */}
-              <div className="hidden lg:block absolute top-8 left-8 w-60 glass-strong rounded-2xl p-4 shadow-card animate-float">
-                <div className="text-azure text-[10px] font-bold uppercase tracking-widest mb-1">Live Route</div>
-                <div className="text-sm font-semibold">Dubai · 5-Day Luxury Escape</div>
-                <div className="text-xs text-muted-foreground mt-1">Desert, marina & skyline</div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

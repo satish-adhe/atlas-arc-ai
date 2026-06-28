@@ -111,6 +111,11 @@
   50% { transform: translateY(-10px); }
 }
 
+@keyframes hang {
+  0%, 100% { transform: translateY(0) rotate(var(--hang-rotate, 0deg)); }
+  50% { transform: translateY(-16px) rotate(calc(var(--hang-rotate, 0deg) + 2deg)); }
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -152,6 +157,10 @@
 
 @utility animate-fade-up {
   animation: fade-up 0.8s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+
+@utility animate-hang {
+  animation: hang 5s ease-in-out infinite;
 }
 
 @utility aurora-bg {
