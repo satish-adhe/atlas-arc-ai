@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ArrowRight, Sparkles, MapPin, Wallet, CloudSun, Share2, Compass, Hotel, Plane } from "lucide-react";
-import heroGlobe from "@/assets/hero-globe.jpg";
 import heroDubaiSkyline from "@/assets/hero-dubai-skyline.jpg";
 import heroDubaiDesert from "@/assets/hero-dubai-desert.jpg";
 import heroDubaiPalm from "@/assets/hero-dubai-palm.jpg";
