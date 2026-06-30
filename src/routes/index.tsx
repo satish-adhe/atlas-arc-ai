@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ArrowRight, Sparkles, MapPin, Wallet, CloudSun, Share2, Compass, Hotel, Plane } from "lucide-react";
 import heroDubaiSkyline from "@/assets/hero-dubai-skyline.jpg";
@@ -56,7 +57,48 @@ const testimonials = [
   { quote: "Finally an AI tool that feels like a real concierge, not a chatbot.", who: "Aisha Patel", role: "Founder, Lumen" },
 ];
 
+function parseQuickQuery(q: string): { days?: number; budget?: number; interests?: string[] } {
+  const out: { days?: number; budget?: number; interests?: string[] } = {};
+  const dayM = q.match(/(\d+)\s*-?\s*days?/i);
+  if (dayM) out.days = Math.min(30, Math.max(1, parseInt(dayM[1])));
+  const budM = q.match(/\$\s*(\d[\d,]*)\s*([kK])?/) || q.match(/(\d[\d,]*)\s*([kK])\b/);
+  if (budM) {
+    let b = parseInt(budM[1].replace(/,/g, ""));
+    if (budM[2]) b *= 1000;
+    if (b >= 100) out.budget = Math.min(100000, b);
+  }
+  const interestMap: Record<string, string> = {
+    food: "Food", culinary: "Food", nature: "Nature", history: "History",
+    nightlife: "Nightlife", architecture: "Architecture", adventure: "Adventure",
+    wellness: "Wellness", art: "Art", beach: "Beaches", beaches: "Beaches", shopping: "Shopping",
+  };
+  const found = new Set<string>();
+  for (const k of Object.keys(interestMap)) {
+    if (new RegExp(`\\b${k}\\b`, "i").test(q)) found.add(interestMap[k]);
+  }
+  if (found.size) out.interests = [...found];
+  return out;
+}
+
 function Landing() {
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+
+  const submitSearch = () => {
+    const q = query.trim();
+    if (!q) { navigate({ to: "/planner" }); return; }
+    const parsed = parseQuickQuery(q);
+    navigate({
+      to: "/planner",
+      search: {
+        q,
+        ...(parsed.days ? { days: parsed.days } : {}),
+        ...(parsed.budget ? { budget: parsed.budget } : {}),
+        ...(parsed.interests ? { interests: parsed.interests.join(",") } : {}),
+        auto: 1,
+      },
+    });
+  };
   return (
     <SiteShell>
       {/* HERO */}
@@ -166,15 +208,17 @@ function Landing() {
           <div className="relative max-w-3xl mx-auto mt-12 group">
             <div className="absolute -inset-1 bg-gradient-to-r from-azure to-azure-glow rounded-2xl blur-xl opacity-30 group-focus-within:opacity-60 transition duration-700" />
             <form
-              onSubmit={(e) => { e.preventDefault(); window.location.assign("/planner"); }}
+              onSubmit={(e) => { e.preventDefault(); submitSearch(); }}
               className="relative glass-strong p-2 rounded-2xl flex flex-col sm:flex-row items-stretch gap-2"
             >
               <input
                 type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder="Plan a 7-day culinary tour of Tokyo on a $3k budget…"
                 className="flex-1 bg-transparent px-5 py-4 outline-none text-foreground placeholder:text-muted-foreground/60"
               />
-              <button className="bg-azure hover:bg-azure-glow text-white px-7 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+              <button type="submit" className="bg-azure hover:bg-azure-glow text-white px-7 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
                 Generate <ArrowRight className="size-4" />
               </button>
             </form>
