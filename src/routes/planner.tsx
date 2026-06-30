@@ -6,6 +6,13 @@ import { Sparkles, MapPin, Calendar, Wallet, Heart, ArrowRight, Loader2, Users, 
 import { generateItinerary, type Itinerary, type ItineraryDay } from "@/lib/planner.functions";
 
 export const Route = createFileRoute("/planner")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    q: typeof s.q === "string" ? s.q : undefined,
+    days: s.days != null ? Number(s.days) || undefined : undefined,
+    budget: s.budget != null ? Number(s.budget) || undefined : undefined,
+    interests: typeof s.interests === "string" ? s.interests : undefined,
+    auto: s.auto === 1 || s.auto === "1" ? 1 : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "AI Trip Planner — TripGenius AI" },
