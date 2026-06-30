@@ -40,10 +40,13 @@ async function fetchWikiImage(title: string): Promise<string | null> {
 }
 
 function Planner() {
-  const [destination, setDestination] = useState("");
-  const [days, setDays] = useState(5);
-  const [budget, setBudget] = useState(2500);
-  const [selected, setSelected] = useState<string[]>(["Food", "Nature"]);
+  const search = Route.useSearch();
+  const [destination, setDestination] = useState(search.q ?? "");
+  const [days, setDays] = useState(search.days ?? 5);
+  const [budget, setBudget] = useState(search.budget ?? 2500);
+  const [selected, setSelected] = useState<string[]>(
+    search.interests ? search.interests.split(",").filter(Boolean) : ["Food", "Nature"]
+  );
   const [group, setGroup] = useState("Solo");
   const [transport, setTransport] = useState("Mixed");
   const [loading, setLoading] = useState(false);
@@ -56,8 +59,9 @@ function Planner() {
   const toggle = (i: string) =>
     setSelected((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
 
-  async function generate() {
-    if (!destination.trim() || loading) return;
+  async function generate(overrides?: { destination?: string; days?: number; budget?: number; interests?: string[] }) {
+    const dest = (overrides?.destination ?? destination).trim();
+    if (!dest || loading) return;
     setLoading(true);
     setError(null);
     setItinerary(null);
@@ -65,7 +69,14 @@ function Planner() {
     setDayImgs({});
     try {
       const result = await callPlan({
-        data: { destination: destination.trim(), days, budgetUSD: budget, interests: selected, groupType: group, transport },
+        data: {
+          destination: dest,
+          days: overrides?.days ?? days,
+          budgetUSD: overrides?.budget ?? budget,
+          interests: overrides?.interests ?? selected,
+          groupType: group,
+          transport,
+        },
       });
       setItinerary(result);
     } catch (e) {
@@ -74,6 +85,19 @@ function Planner() {
       setLoading(false);
     }
   }
+
+  // Auto-generate on first mount if home page passed ?q=...&auto=1
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (search.auto && search.q) {
+      generate({
+        destination: search.q,
+        days: search.days,
+        budget: search.budget,
+        interests: search.interests ? search.interests.split(",").filter(Boolean) : undefined,
+      });
+    }
+  }, []);
 
   // Fetch hero + per-day images in parallel after itinerary loads
   useEffect(() => {
