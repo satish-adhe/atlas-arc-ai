@@ -57,7 +57,48 @@ const testimonials = [
   { quote: "Finally an AI tool that feels like a real concierge, not a chatbot.", who: "Aisha Patel", role: "Founder, Lumen" },
 ];
 
+function parseQuickQuery(q: string): { days?: number; budget?: number; interests?: string[] } {
+  const out: { days?: number; budget?: number; interests?: string[] } = {};
+  const dayM = q.match(/(\d+)\s*-?\s*days?/i);
+  if (dayM) out.days = Math.min(30, Math.max(1, parseInt(dayM[1])));
+  const budM = q.match(/\$\s*(\d[\d,]*)\s*([kK])?/) || q.match(/(\d[\d,]*)\s*([kK])\b/);
+  if (budM) {
+    let b = parseInt(budM[1].replace(/,/g, ""));
+    if (budM[2]) b *= 1000;
+    if (b >= 100) out.budget = Math.min(100000, b);
+  }
+  const interestMap: Record<string, string> = {
+    food: "Food", culinary: "Food", nature: "Nature", history: "History",
+    nightlife: "Nightlife", architecture: "Architecture", adventure: "Adventure",
+    wellness: "Wellness", art: "Art", beach: "Beaches", beaches: "Beaches", shopping: "Shopping",
+  };
+  const found = new Set<string>();
+  for (const k of Object.keys(interestMap)) {
+    if (new RegExp(`\\b${k}\\b`, "i").test(q)) found.add(interestMap[k]);
+  }
+  if (found.size) out.interests = [...found];
+  return out;
+}
+
 function Landing() {
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+
+  const submitSearch = () => {
+    const q = query.trim();
+    if (!q) { navigate({ to: "/planner" }); return; }
+    const parsed = parseQuickQuery(q);
+    navigate({
+      to: "/planner",
+      search: {
+        q,
+        ...(parsed.days ? { days: parsed.days } : {}),
+        ...(parsed.budget ? { budget: parsed.budget } : {}),
+        ...(parsed.interests ? { interests: parsed.interests.join(",") } : {}),
+        auto: 1,
+      },
+    });
+  };
   return (
     <SiteShell>
       {/* HERO */}
