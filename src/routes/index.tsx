@@ -208,15 +208,17 @@ function Landing() {
           <div className="relative max-w-3xl mx-auto mt-12 group">
             <div className="absolute -inset-1 bg-gradient-to-r from-azure to-azure-glow rounded-2xl blur-xl opacity-30 group-focus-within:opacity-60 transition duration-700" />
             <form
-              onSubmit={(e) => { e.preventDefault(); window.location.assign("/planner"); }}
+              onSubmit={(e) => { e.preventDefault(); submitSearch(); }}
               className="relative glass-strong p-2 rounded-2xl flex flex-col sm:flex-row items-stretch gap-2"
             >
               <input
                 type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder="Plan a 7-day culinary tour of Tokyo on a $3k budget…"
                 className="flex-1 bg-transparent px-5 py-4 outline-none text-foreground placeholder:text-muted-foreground/60"
               />
-              <button className="bg-azure hover:bg-azure-glow text-white px-7 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+              <button type="submit" className="bg-azure hover:bg-azure-glow text-white px-7 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
                 Generate <ArrowRight className="size-4" />
               </button>
             </form>
