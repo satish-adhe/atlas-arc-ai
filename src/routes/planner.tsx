@@ -213,15 +213,7 @@ function Planner() {
           ) : itinerary ? (
             <ItineraryView itinerary={itinerary} heroImg={heroImg} dayImgs={dayImgs} />
           ) : (
-            <div className="glass rounded-3xl p-12 text-center min-h-[400px] grid place-items-center">
-              <div>
-                <Sparkles className="size-10 text-azure mx-auto mb-4" />
-                <h3 className="text-xl font-display font-semibold">Ready when you are</h3>
-                <p className="text-sm text-muted-foreground mt-2 max-w-sm mx-auto">
-                  Enter any destination on the left and hit Generate. Your custom itinerary will appear here.
-                </p>
-              </div>
-            </div>
+            <ReadyPlaceholder />
           )}
         </div>
       </div>
