@@ -186,7 +186,7 @@ function Planner() {
             </Field>
 
             <button
-              onClick={generate}
+              onClick={() => generate()}
               disabled={loading || !destination.trim()}
               className="w-full bg-azure hover:bg-azure-glow text-white py-4 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
