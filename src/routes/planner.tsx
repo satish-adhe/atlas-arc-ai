@@ -4,6 +4,66 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Sparkles, MapPin, Calendar, Wallet, Heart, ArrowRight, Loader2, Users, Plane, CloudSun, Hotel, Utensils, Camera, Compass } from "lucide-react";
 import { generateItinerary, type Itinerary, type ItineraryDay } from "@/lib/planner.functions";
+import destTokyo from "@/assets/dest-tokyo.jpg";
+import destKyoto from "@/assets/dest-kyoto.jpg";
+import destNorway from "@/assets/dest-norway.jpg";
+import destSantorini from "@/assets/dest-santorini.jpg";
+import destBali from "@/assets/dest-bali.jpg";
+import destMarrakech from "@/assets/dest-marrakech.jpg";
+import heroDubaiSkyline from "@/assets/hero-dubai-skyline.jpg";
+import heroNatureWalk from "@/assets/hero-nature-walk.jpg";
+
+const rotatingPlaces = [
+  { img: destTokyo, name: "Tokyo", country: "Japan" },
+  { img: destKyoto, name: "Kyoto", country: "Japan" },
+  { img: destSantorini, name: "Santorini", country: "Greece" },
+  { img: destBali, name: "Ubud", country: "Bali" },
+  { img: destNorway, name: "Geirangerfjord", country: "Norway" },
+  { img: heroDubaiSkyline, name: "Dubai", country: "UAE" },
+  { img: destMarrakech, name: "Marrakech", country: "Morocco" },
+  { img: heroNatureWalk, name: "Wild Trails", country: "Nature" },
+];
+
+function ReadyPlaceholder() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setI((n) => (n + 1) % rotatingPlaces.length), 2800);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="glass rounded-3xl overflow-hidden min-h-[400px] relative">
+      <div className="relative h-72 sm:h-80 w-full overflow-hidden">
+        {rotatingPlaces.map((p, idx) => (
+          <img
+            key={p.name}
+            src={p.img}
+            alt={p.name}
+            loading="lazy"
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === i ? "opacity-100 scale-105" : "opacity-0"}`}
+            style={{ transition: "opacity 1s ease-in-out, transform 6s ease-in-out" }}
+          />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent pointer-events-none" />
+        <div className="absolute bottom-4 left-5 text-white drop-shadow">
+          <div className="text-[10px] uppercase tracking-widest opacity-80 font-bold">{rotatingPlaces[i].country}</div>
+          <div className="text-2xl font-display font-bold">{rotatingPlaces[i].name}</div>
+        </div>
+        <div className="absolute top-4 right-4 flex gap-1.5">
+          {rotatingPlaces.map((_, idx) => (
+            <span key={idx} className={`h-1 rounded-full transition-all ${idx === i ? "w-6 bg-azure" : "w-1.5 bg-white/40"}`} />
+          ))}
+        </div>
+      </div>
+      <div className="p-6 text-center">
+        <Sparkles className="size-7 text-azure mx-auto mb-3" />
+        <h3 className="text-xl font-display font-semibold">Ready when you are</h3>
+        <p className="text-sm text-muted-foreground mt-2 max-w-sm mx-auto">
+          Enter any destination on the left and hit Generate — or search from the home page and we'll plan it instantly.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/planner")({
   validateSearch: (s: Record<string, unknown>) => ({
