@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ArrowRight, Sparkles, MapPin, Wallet, CloudSun, Share2, Compass, Hotel, Plane } from "lucide-react";
 import heroDubaiSkyline from "@/assets/hero-dubai-skyline.jpg";
