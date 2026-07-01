@@ -34,6 +34,8 @@ type PlanInput = {
   interests: string[];
   groupType: string;
   transport: string;
+  origin?: string;
+  tripMode?: "direct" | "scenic";
 };
 
 export const generateItinerary = createServerFn({ method: "POST" })
@@ -47,13 +49,21 @@ export const generateItinerary = createServerFn({ method: "POST" })
     const interests = Array.isArray(i.interests) ? i.interests.slice(0, 12).map(String) : [];
     const groupType = (i.groupType ?? "solo").toString().slice(0, 40);
     const transport = (i.transport ?? "mixed").toString().slice(0, 60);
-    return { destination, days, budgetUSD, interests, groupType, transport };
+    const origin = i.origin ? i.origin.toString().slice(0, 200).trim() : undefined;
+    const tripMode: "direct" | "scenic" = i.tripMode === "scenic" ? "scenic" : "direct";
+    return { destination, days, budgetUSD, interests, groupType, transport, origin, tripMode };
   })
   .handler(async ({ data }): Promise<Itinerary> => {
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
 
     const sys = `You are a senior world-travel concierge. You design realistic, vivid, day-by-day trip plans for ANY destination on Earth — a city, country, region, island, landmark, or multi-country tour. Output STRICT JSON only, no prose, no markdown.`;
+
+    const routingLine = data.origin
+      ? data.tripMode === "scenic"
+        ? `- Starting point: ${data.origin}. Build a SCENIC route from here to ${data.destination}: include 2-4 worthwhile tourist stops along the natural travel path (cities, viewpoints, cultural sites) as intermediate cities/days. Do NOT skip the final destination.`
+        : `- Starting point: ${data.origin}. Route directly to ${data.destination} (minimal detours). Include a short travel day if the distance requires it.`
+      : `- No starting point provided — plan the trip in-destination.`;
 
     const user = `Plan a trip with these inputs:
 - Destination: ${data.destination}
@@ -62,39 +72,33 @@ export const generateItinerary = createServerFn({ method: "POST" })
 - Interests: ${data.interests.join(", ") || "general"}
 - Group: ${data.groupType}
 - Transport: ${data.transport}
+${routingLine}
 
 Return JSON exactly matching this TypeScript type:
 {
-  "destination": string,                          // echo back, normalized
-  "summary": string,                              // <=220 chars overview
-  "bestTime": string,                             // best months to visit
-  "weather": string,                              // typical weather right now (1 sentence)
-  "estimatedBudgetUSD": number,                   // realistic total for this plan
-  "budgetBreakdown": { "stay": number, "food": number, "transport": number, "activities": number, "misc": number }, // USD, sums ~= estimatedBudgetUSD
-  "cities": string[],                             // 1-8 cities/areas covered, in visit order
-  "hotels": [{ "name": string, "city": string, "vibe": string, "pricePerNightUSD": number }],         // 3-5 items, real or plausible
-  "restaurants": [{ "name": string, "city": string, "cuisine": string }],                              // 4-6 items
-  "attractions": [{ "name": string, "city": string, "type": string }],                                 // 5-8 must-see
-  "hiddenGems": [{ "name": string, "city": string, "why": string }],                                   // 3-5 lesser-known
+  "destination": string,
+  "summary": string,
+  "bestTime": string,
+  "weather": string,
+  "estimatedBudgetUSD": number,
+  "budgetBreakdown": { "stay": number, "food": number, "transport": number, "activities": number, "misc": number },
+  "cities": string[],
+  "hotels": [{ "name": string, "city": string, "vibe": string, "pricePerNightUSD": number }],
+  "restaurants": [{ "name": string, "city": string, "cuisine": string }],
+  "attractions": [{ "name": string, "city": string, "type": string }],
+  "hiddenGems": [{ "name": string, "city": string, "why": string }],
   "days": [{
-    "day": number,                                // 1..N
-    "city": string,                               // where the day happens
-    "tag": string,                                // 1-2 words: Arrival/Culture/Nature/Food/Transit/Leisure/Adventure
-    "title": string,                              // <=60 chars catchy headline
-    "description": string,                        // 1-2 sentences
-    "morning": string,
-    "afternoon": string,
-    "evening": string,
-    "imageQuery": string                          // 2-4 evocative english words for an image search of that day's main place
+    "day": number, "city": string, "tag": string, "title": string, "description": string,
+    "morning": string, "afternoon": string, "evening": string, "imageQuery": string
   }]
 }
 
 Rules:
 - Generate exactly ${data.days} day objects, numbered 1..${data.days}.
-- Use REAL place names, neighborhoods, dishes, and landmarks for the destination.
-- For multi-city or country tours, distribute days logically across cities[].
-- Tailor activities to the interests and group type.
-- Keep currency in USD. No commentary outside the JSON.`;
+- Use REAL place names, neighborhoods, dishes, and landmarks.
+- If a starting point is provided, include it as cities[0] and start day 1 there.
+- Tailor activities to interests and group type.
+- Keep all money values in USD. Output STRICT JSON only.`;
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

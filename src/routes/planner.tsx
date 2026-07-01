@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteShell, PageHeader } from "@/components/site/SiteShell";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Sparkles, MapPin, Calendar, Wallet, Heart, ArrowRight, Loader2, Users, Plane, CloudSun, Hotel, Utensils, Camera, Compass } from "lucide-react";
+import { Sparkles, MapPin, Calendar, Wallet, Heart, ArrowRight, Loader2, Users, Plane, CloudSun, Hotel, Utensils, Camera, Compass, Navigation, Download, Route as RouteIcon } from "lucide-react";
 import { generateItinerary, type Itinerary, type ItineraryDay } from "@/lib/planner.functions";
+import { CURRENCIES, formatMoney, type CurrencyCode } from "@/lib/currency";
+import { downloadItineraryPDF } from "@/lib/itinerary-pdf";
 import destTokyo from "@/assets/dest-tokyo.jpg";
 import destKyoto from "@/assets/dest-kyoto.jpg";
 import destNorway from "@/assets/dest-norway.jpg";
@@ -99,11 +101,33 @@ async function fetchWikiImage(title: string): Promise<string | null> {
   }
 }
 
+async function reverseGeocode(lat: number, lon: number): Promise<string | null> {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`);
+    if (!r.ok) return null;
+    const j = (await r.json()) as { address?: Record<string, string>; display_name?: string };
+    const a = j.address ?? {};
+    const city = a.city || a.town || a.village || a.county || a.state;
+    const country = a.country;
+    if (city && country) return `${city}, ${country}`;
+    return j.display_name ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function Planner() {
   const search = Route.useSearch();
   const [destination, setDestination] = useState(search.q ?? "");
+  const [origin, setOrigin] = useState("");
+  const [tripMode, setTripMode] = useState<"direct" | "scenic">("direct");
+  const [locLoading, setLocLoading] = useState(false);
   const [days, setDays] = useState(search.days ?? 5);
   const [budget, setBudget] = useState(search.budget ?? 2500);
+  const [currency, setCurrency] = useState<CurrencyCode>(() => {
+    if (typeof window === "undefined") return "USD";
+    return (localStorage.getItem("tg_currency") as CurrencyCode) || "USD";
+  });
   const [selected, setSelected] = useState<string[]>(
     search.interests ? search.interests.split(",").filter(Boolean) : ["Food", "Nature"]
   );
@@ -116,8 +140,32 @@ function Planner() {
   const [dayImgs, setDayImgs] = useState<Record<number, string>>({});
   const callPlan = useServerFn(generateItinerary);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") localStorage.setItem("tg_currency", currency);
+  }, [currency]);
+
   const toggle = (i: string) =>
     setSelected((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
+
+  const useMyLocation = () => {
+    if (!("geolocation" in navigator)) {
+      setError("Geolocation isn't available in this browser.");
+      return;
+    }
+    setLocLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const label = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+        setOrigin(label ?? `${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)}`);
+        setLocLoading(false);
+      },
+      () => {
+        setError("Couldn't read your location — enter it manually.");
+        setLocLoading(false);
+      },
+      { timeout: 8000 }
+    );
+  };
 
   async function generate(overrides?: { destination?: string; days?: number; budget?: number; interests?: string[] }) {
     const dest = (overrides?.destination ?? destination).trim();
@@ -136,6 +184,8 @@ function Planner() {
           interests: overrides?.interests ?? selected,
           groupType: group,
           transport,
+          origin: origin.trim() || undefined,
+          tripMode,
         },
       });
       setItinerary(result);
@@ -146,7 +196,6 @@ function Planner() {
     }
   }
 
-  // Auto-generate on first mount if home page passed ?q=...&auto=1
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (search.auto && search.q) {
@@ -159,7 +208,6 @@ function Planner() {
     }
   }, []);
 
-  // Fetch hero + per-day images in parallel after itinerary loads
   useEffect(() => {
     if (!itinerary) return;
     let cancelled = false;
@@ -192,6 +240,33 @@ function Planner() {
         {/* Form */}
         <div className="col-span-12 lg:col-span-5 space-y-6">
           <div className="glass rounded-3xl p-6 space-y-6">
+            <Field icon={Navigation} label="Starting from (optional)">
+              <div className="flex items-center gap-2">
+                <input
+                  value={origin}
+                  onChange={(e) => setOrigin(e.target.value)}
+                  placeholder="e.g. Delhi, India — or use my location"
+                  className="flex-1 bg-transparent outline-none text-base font-medium placeholder:text-muted-foreground/60"
+                />
+                <button
+                  type="button"
+                  onClick={useMyLocation}
+                  disabled={locLoading}
+                  title="Use my location"
+                  className="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border border-hairline hover:border-azure hover:text-azure transition-all flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  {locLoading ? <Loader2 className="size-3.5 animate-spin" /> : <MapPin className="size-3.5" />}
+                  {locLoading ? "Locating…" : "Use my location"}
+                </button>
+              </div>
+              {origin && (
+                <div className="mt-3 flex gap-2">
+                  <ModeChip active={tripMode === "direct"} onClick={() => setTripMode("direct")} icon={Plane} label="Direct" hint="Straight to destination" />
+                  <ModeChip active={tripMode === "scenic"} onClick={() => setTripMode("scenic")} icon={RouteIcon} label="Scenic" hint="Cover places on the way" />
+                </div>
+              )}
+            </Field>
+
             <Field icon={MapPin} label="Destination">
               <input
                 value={destination}
@@ -206,10 +281,22 @@ function Planner() {
                 <span className="text-lg font-semibold w-20 text-right">{days} days</span>
               </div>
             </Field>
-            <Field icon={Wallet} label="Budget (USD)">
+            <Field icon={Wallet} label={`Budget (${currency})`}>
+              <div className="flex items-center gap-3 mb-3">
+                <select
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                  className="bg-surface-strong border border-hairline rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:border-azure"
+                >
+                  {CURRENCIES.map((c) => (
+                    <option key={c.code} value={c.code}>{c.code} · {c.name}</option>
+                  ))}
+                </select>
+                <span className="text-xs text-muted-foreground">Displayed everywhere in {currency}</span>
+              </div>
               <div className="flex items-center gap-4">
                 <input type="range" min={300} max={20000} step={100} value={budget} onChange={(e) => setBudget(+e.target.value)} className="flex-1 accent-azure" />
-                <span className="text-lg font-semibold w-24 text-right">${budget.toLocaleString()}</span>
+                <span className="text-lg font-semibold w-28 text-right">{formatMoney(budget, currency)}</span>
               </div>
             </Field>
             <Field icon={Users} label="Group">
@@ -250,14 +337,14 @@ function Planner() {
               disabled={loading || !destination.trim()}
               className="w-full bg-azure hover:bg-azure-glow text-white py-4 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {loading ? <><Loader2 className="size-4 animate-spin" /> Composing itinerary…</> : <><Sparkles className="size-4" /> Generate Itinerary</>}
+              {loading ? <><Loader2 className="size-4 animate-spin" /> Building your trip…</> : <><Sparkles className="size-4" /> Generate Itinerary</>}
             </button>
             {error && <div className="text-xs text-red-400">{error}</div>}
           </div>
 
           <div className="glass rounded-3xl p-6 text-sm text-muted-foreground">
             <div className="text-xs font-bold uppercase tracking-widest text-azure mb-3">Tip</div>
-            Try anything: <span className="text-foreground">"Iceland ring road"</span>, <span className="text-foreground">"South India temple trail"</span>, <span className="text-foreground">"Tokyo + Seoul + Taipei"</span>, or just <span className="text-foreground">"World tour"</span>.
+            Add your starting city and pick <span className="text-foreground">Scenic</span> to cover cool stops along the way, or <span className="text-foreground">Direct</span> to jump straight in.
           </div>
         </div>
 
@@ -271,7 +358,7 @@ function Planner() {
               ))}
             </div>
           ) : itinerary ? (
-            <ItineraryView itinerary={itinerary} heroImg={heroImg} dayImgs={dayImgs} />
+            <ItineraryView itinerary={itinerary} heroImg={heroImg} dayImgs={dayImgs} currency={currency} />
           ) : (
             <ReadyPlaceholder />
           )}
@@ -281,7 +368,23 @@ function Planner() {
   );
 }
 
-function ItineraryView({ itinerary, heroImg, dayImgs }: { itinerary: Itinerary; heroImg: string | null; dayImgs: Record<number, string> }) {
+function ModeChip({ active, onClick, icon: Icon, label, hint }: { active: boolean; onClick: () => void; icon: React.ElementType; label: string; hint: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-1 px-3 py-2 rounded-xl border text-left transition-all ${active ? "border-azure bg-azure/10" : "border-hairline hover:border-foreground/40"}`}
+    >
+      <div className="flex items-center gap-1.5 text-xs font-semibold">
+        <Icon className={`size-3.5 ${active ? "text-azure" : "text-muted-foreground"}`} />
+        {label}
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-0.5">{hint}</div>
+    </button>
+  );
+}
+
+function ItineraryView({ itinerary, heroImg, dayImgs, currency }: { itinerary: Itinerary; heroImg: string | null; dayImgs: Record<number, string>; currency: CurrencyCode }) {
   const bb = itinerary.budgetBreakdown;
   return (
     <div className="space-y-6">
@@ -293,15 +396,23 @@ function ItineraryView({ itinerary, heroImg, dayImgs }: { itinerary: Itinerary; 
             <div className="w-full h-full grid place-items-center text-muted-foreground"><Loader2 className="size-6 animate-spin" /></div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-            <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">Your AI Trip</div>
-            <h2 className="text-3xl font-display font-bold mt-1">{itinerary.destination}</h2>
-            <p className="text-sm opacity-90 mt-1 line-clamp-2 max-w-2xl">{itinerary.summary}</p>
+          <div className="absolute bottom-0 left-0 right-0 p-6 text-white flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">Your AI Trip</div>
+              <h2 className="text-3xl font-display font-bold mt-1 truncate">{itinerary.destination}</h2>
+              <p className="text-sm opacity-90 mt-1 line-clamp-2 max-w-2xl">{itinerary.summary}</p>
+            </div>
+            <button
+              onClick={() => downloadItineraryPDF(itinerary, currency)}
+              className="shrink-0 inline-flex items-center gap-1.5 bg-white/95 hover:bg-white text-slate-900 px-4 py-2 rounded-full text-xs font-semibold transition-all shadow-lg"
+            >
+              <Download className="size-3.5" /> Download PDF
+            </button>
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-hairline border-t border-hairline">
           <Stat icon={Calendar} label="Days" value={String(itinerary.days.length)} />
-          <Stat icon={Wallet} label="Est. budget" value={`$${itinerary.estimatedBudgetUSD.toLocaleString()}`} />
+          <Stat icon={Wallet} label="Est. budget" value={formatMoney(itinerary.estimatedBudgetUSD, currency)} />
           <Stat icon={CloudSun} label="Best time" value={itinerary.bestTime} />
           <Stat icon={MapPin} label="Cities" value={String(itinerary.cities.length)} />
         </div>
@@ -318,7 +429,7 @@ function ItineraryView({ itinerary, heroImg, dayImgs }: { itinerary: Itinerary; 
         </div>
       </Section>
 
-      <Section icon={Wallet} title="Budget breakdown">
+      <Section icon={Wallet} title={`Budget breakdown · ${currency}`}>
         <div className="space-y-2">
           {[
             ["Stay", bb.stay], ["Food", bb.food], ["Transport", bb.transport], ["Activities", bb.activities], ["Misc", bb.misc],
@@ -329,7 +440,7 @@ function ItineraryView({ itinerary, heroImg, dayImgs }: { itinerary: Itinerary; 
               <div key={label as string}>
                 <div className="flex justify-between text-xs mb-1">
                   <span className="text-muted-foreground">{label}</span>
-                  <span className="font-semibold">${Number(val).toLocaleString()} · {pct}%</span>
+                  <span className="font-semibold">{formatMoney(Number(val), currency)} · {pct}%</span>
                 </div>
                 <div className="h-1.5 rounded-full bg-surface-strong overflow-hidden">
                   <div className="h-full bg-azure" style={{ width: `${pct}%` }} />
@@ -351,7 +462,7 @@ function ItineraryView({ itinerary, heroImg, dayImgs }: { itinerary: Itinerary; 
             {itinerary.hotels.map((h) => (
               <li key={h.name} className="flex justify-between gap-3">
                 <div><div className="font-medium">{h.name}</div><div className="text-xs text-muted-foreground">{h.city} · {h.vibe}</div></div>
-                <div className="text-xs text-muted-foreground whitespace-nowrap">${h.pricePerNightUSD}/nt</div>
+                <div className="text-xs text-muted-foreground whitespace-nowrap">{formatMoney(h.pricePerNightUSD, currency)}/nt</div>
               </li>
             ))}
           </ul>
@@ -383,6 +494,13 @@ function ItineraryView({ itinerary, heroImg, dayImgs }: { itinerary: Itinerary; 
         <CloudSun className="size-5 text-azure shrink-0 mt-0.5" />
         <div><span className="font-semibold">Weather:</span> <span className="text-muted-foreground">{itinerary.weather}</span></div>
       </div>
+
+      <button
+        onClick={() => downloadItineraryPDF(itinerary, currency)}
+        className="w-full inline-flex items-center justify-center gap-2 bg-azure hover:bg-azure-glow text-white py-3.5 rounded-2xl font-semibold transition-all"
+      >
+        <Download className="size-4" /> Download full plan as PDF
+      </button>
     </div>
   );
 }
