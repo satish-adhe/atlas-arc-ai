@@ -236,7 +236,7 @@ function Planner() {
         subtitle="Type any city, country, island, region, or multi-stop tour. The AI builds your full itinerary, budget, hotels, food, and routes."
       />
 
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-12 gap-8">
+      <div className="max-w-7xl mx-auto px-6 py-6 md:py-8 grid grid-cols-12 gap-6">
         {/* Form */}
         <div className="col-span-12 lg:col-span-5 space-y-6">
           <div className="glass rounded-3xl p-6 space-y-6">
