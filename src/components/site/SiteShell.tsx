@@ -23,11 +23,11 @@ export function PageHeader({ eyebrow, title, subtitle }: { eyebrow?: string; tit
             {eyebrow}
           </div>
         )}
-        <h1 className="text-5xl md:text-7xl font-display font-bold tracking-tight max-w-4xl leading-[1.05]">
+        <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tight max-w-4xl leading-[1.05]">
           {title}
         </h1>
         {subtitle && (
-          <p className="mt-6 text-lg text-muted-foreground max-w-2xl leading-relaxed">{subtitle}</p>
+          <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">{subtitle}</p>
         )}
       </div>
     </section>
