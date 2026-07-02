@@ -406,7 +406,7 @@ function ItineraryView({ itinerary, heroImg, dayImgs, currency }: { itinerary: I
               <p className="text-sm opacity-90 mt-1 line-clamp-2 max-w-2xl">{itinerary.summary}</p>
             </div>
             <button
-              onClick={() => downloadItineraryPDF(itinerary, currency)}
+              onClick={() => downloadItineraryPDF(itinerary, currency, heroImg, dayImgs)}
               className="shrink-0 inline-flex items-center gap-1.5 bg-white/95 hover:bg-white text-slate-900 px-4 py-2 rounded-full text-xs font-semibold transition-all shadow-lg"
             >
               <Download className="size-3.5" /> Download PDF
