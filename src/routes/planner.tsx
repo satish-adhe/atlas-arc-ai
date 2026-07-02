@@ -499,7 +499,7 @@ function ItineraryView({ itinerary, heroImg, dayImgs, currency }: { itinerary: I
       </div>
 
       <button
-        onClick={() => downloadItineraryPDF(itinerary, currency)}
+        onClick={() => downloadItineraryPDF(itinerary, currency, heroImg, dayImgs)}
         className="w-full inline-flex items-center justify-center gap-2 bg-azure hover:bg-azure-glow text-white py-3.5 rounded-2xl font-semibold transition-all"
       >
         <Download className="size-4" /> Download full plan as PDF
