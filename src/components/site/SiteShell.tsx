@@ -16,7 +16,7 @@ export function PageHeader({ eyebrow, title, subtitle }: { eyebrow?: string; tit
   return (
     <section className="relative overflow-hidden border-b border-hairline">
       <div className="absolute inset-0 aurora-bg opacity-50 pointer-events-none" />
-      <div className="relative max-w-7xl mx-auto px-6 py-20 md:py-28">
+      <div className="relative max-w-7xl mx-auto px-6 py-10 md:py-14">
         {eyebrow && (
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-azure/10 border border-azure/20 text-azure text-xs font-bold uppercase tracking-widest mb-6">
             <span className="size-1.5 rounded-full bg-azure animate-pulse" />
