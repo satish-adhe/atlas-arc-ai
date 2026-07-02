@@ -236,7 +236,7 @@ function Planner() {
         subtitle="Type any city, country, island, region, or multi-stop tour. The AI builds your full itinerary, budget, hotels, food, and routes."
       />
 
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-12 gap-8">
+      <div className="max-w-7xl mx-auto px-6 py-6 md:py-8 grid grid-cols-12 gap-6">
         {/* Form */}
         <div className="col-span-12 lg:col-span-5 space-y-6">
           <div className="glass rounded-3xl p-6 space-y-6">
@@ -286,10 +286,13 @@ function Planner() {
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-                  className="bg-surface-strong border border-hairline rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:border-azure"
+                  style={{ backgroundColor: "#0f172a", color: "#f8fafc" }}
+                  className="border border-hairline rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:border-azure cursor-pointer"
                 >
                   {CURRENCIES.map((c) => (
-                    <option key={c.code} value={c.code}>{c.code} · {c.name}</option>
+                    <option key={c.code} value={c.code} style={{ backgroundColor: "#0f172a", color: "#f8fafc" }}>
+                      {c.code} · {c.symbol} · {c.name}
+                    </option>
                   ))}
                 </select>
                 <span className="text-xs text-muted-foreground">Displayed everywhere in {currency}</span>
@@ -403,7 +406,7 @@ function ItineraryView({ itinerary, heroImg, dayImgs, currency }: { itinerary: I
               <p className="text-sm opacity-90 mt-1 line-clamp-2 max-w-2xl">{itinerary.summary}</p>
             </div>
             <button
-              onClick={() => downloadItineraryPDF(itinerary, currency)}
+              onClick={() => downloadItineraryPDF(itinerary, currency, heroImg, dayImgs)}
               className="shrink-0 inline-flex items-center gap-1.5 bg-white/95 hover:bg-white text-slate-900 px-4 py-2 rounded-full text-xs font-semibold transition-all shadow-lg"
             >
               <Download className="size-3.5" /> Download PDF
@@ -496,7 +499,7 @@ function ItineraryView({ itinerary, heroImg, dayImgs, currency }: { itinerary: I
       </div>
 
       <button
-        onClick={() => downloadItineraryPDF(itinerary, currency)}
+        onClick={() => downloadItineraryPDF(itinerary, currency, heroImg, dayImgs)}
         className="w-full inline-flex items-center justify-center gap-2 bg-azure hover:bg-azure-glow text-white py-3.5 rounded-2xl font-semibold transition-all"
       >
         <Download className="size-4" /> Download full plan as PDF
