@@ -286,10 +286,13 @@ function Planner() {
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-                  className="bg-surface-strong border border-hairline rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:border-azure"
+                  style={{ backgroundColor: "#0f172a", color: "#f8fafc" }}
+                  className="border border-hairline rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:border-azure cursor-pointer"
                 >
                   {CURRENCIES.map((c) => (
-                    <option key={c.code} value={c.code}>{c.code} · {c.name}</option>
+                    <option key={c.code} value={c.code} style={{ backgroundColor: "#0f172a", color: "#f8fafc" }}>
+                      {c.code} · {c.symbol} · {c.name}
+                    </option>
                   ))}
                 </select>
                 <span className="text-xs text-muted-foreground">Displayed everywhere in {currency}</span>
