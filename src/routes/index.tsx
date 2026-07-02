@@ -191,21 +191,14 @@ function Landing() {
         </div>
 
         {/* Foreground content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-20 md:pt-32 md:pb-28 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-azure/10 border border-azure/20 text-azure text-xs font-bold uppercase tracking-widest mb-8 animate-fade-up">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-6 pb-14 md:pt-16 md:pb-24 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-azure/10 border border-azure/20 text-azure text-xs font-bold uppercase tracking-widest mb-5 animate-fade-up">
             <span className="size-1.5 rounded-full bg-azure animate-pulse" />
             v2.0 AI Engine Live
           </div>
-          <h1 className="font-display text-5xl sm:text-6xl md:text-8xl font-bold tracking-tight leading-[1.02] max-w-5xl mx-auto animate-fade-up drop-shadow-2xl">
-            Travel at the speed <br className="hidden sm:block" />
-            <span className="text-gradient-azure">of thought.</span>
-          </h1>
-          <p className="mt-8 text-lg md:text-xl text-foreground/80 max-w-2xl mx-auto leading-relaxed animate-fade-up">
-            The world's most advanced AI travel engine. We don't just find flights — we craft hyper-personalized narratives for your next adventure.
-          </p>
 
-          {/* Search */}
-          <div className="relative max-w-3xl mx-auto mt-12 group">
+          {/* Search — moved up so it's visible on load */}
+          <div className="relative max-w-3xl mx-auto mb-8 group animate-fade-up">
             <div className="absolute -inset-1 bg-gradient-to-r from-azure to-azure-glow rounded-2xl blur-xl opacity-30 group-focus-within:opacity-60 transition duration-700" />
             <form
               onSubmit={(e) => { e.preventDefault(); submitSearch(); }}
@@ -215,14 +208,25 @@ function Landing() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Plan a 7-day culinary tour of Tokyo on a $3k budget…"
+                placeholder="Where do you want to go? e.g. Dubai, Bali, Iceland…"
                 className="flex-1 bg-transparent px-5 py-4 outline-none text-foreground placeholder:text-muted-foreground/60"
               />
               <button type="submit" className="bg-azure hover:bg-azure-glow text-white px-7 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
                 Generate <ArrowRight className="size-4" />
               </button>
             </form>
+            <div className="mt-2 text-[11px] text-muted-foreground/80">
+              Tip: you can add days &amp; budget too — "5 days in Paris on $2k".
+            </div>
           </div>
+
+          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.02] max-w-5xl mx-auto animate-fade-up drop-shadow-2xl">
+            Travel at the speed <br className="hidden sm:block" />
+            <span className="text-gradient-azure">of thought.</span>
+          </h1>
+          <p className="mt-6 text-base md:text-lg text-foreground/80 max-w-2xl mx-auto leading-relaxed animate-fade-up">
+            The world's most advanced AI travel engine — hyper-personalized itineraries for anywhere on Earth.
+          </p>
         </div>
       </section>
 
