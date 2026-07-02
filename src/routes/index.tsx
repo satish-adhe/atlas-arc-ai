@@ -102,7 +102,7 @@ function Landing() {
   return (
     <SiteShell>
       {/* HERO */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[68vh] md:min-h-[78vh] flex items-start md:items-center overflow-hidden">
         {/* Background gradients */}
         <div className="absolute inset-0 aurora-bg opacity-70 pointer-events-none" />
         <div
